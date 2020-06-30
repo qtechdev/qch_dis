@@ -16,43 +16,42 @@ std::vector<std::string> qch_dis::disassembler::operator()(
 
   qch_vm::load_program(m, program);
 
-
   qch::instruction inst = qch::unknown_instruction;
   for (int i = 0; i < m.program_size; i += 2) {
     inst = fetch_instruction(m);
     m.pc += 2;
 
     std::stringstream ss;
-    ss << inst.name.data() << " ";
+    ss << inst.name;
 
     switch (inst.args) {
       case qch::args_config::R:
-        ss << qch::reg_token << std::hex << +qch::split_r(inst);
+        ss << " " << qch::reg_token << std::hex << +qch::get_r(inst);
         break;
       case qch::args_config::RR: {
-          auto [x, y] = qch::split_rr(inst);
-          ss << qch::reg_token << std::hex << +x << " ";
+          auto [x, y] = qch::get_rr(inst);
+          ss << " " << qch::reg_token << std::hex << +x << " ";
           ss << qch::reg_token << std::hex << +y;
         }
         break;
       case qch::args_config::RB: {
-          auto [x, b] = qch::split_rb(inst);
-          ss << qch::reg_token << std::hex << +x << " ";
+          auto [x, b] = qch::get_rb(inst);
+          ss << " " << qch::reg_token << std::hex << +x << " ";
           ss << "0x" << std::hex << +b;
         }
         break;
       case qch::args_config::RRN: {
-          auto [x, y, n] = qch::split_rrn(inst);
-          ss << qch::reg_token << std::hex << +x << " ";
+          auto [x, y, n] = qch::get_rrn(inst);
+          ss << " " << qch::reg_token << std::hex << +x << " ";
           ss << qch::reg_token << std::hex << +y << " ";
           ss << "0x" << std::hex << +n;
         }
         break;
       case qch::args_config::A:
-        ss << "0x" << std::hex << +qch::split_a(inst);
+        ss << " 0x" << std::hex << +qch::get_a(inst);
         break;
       case qch::args_config::D:
-        ss << qch::data_token << std::hex << inst.data;
+        ss << " " << qch::data_token << std::hex << inst.data;
         break;
       case qch::args_config::Z:
       default: break;
